@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Qorrie Toolkit</title>
+  <title>Dashboard Qorrie</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body {
@@ -48,11 +48,31 @@
   </style>
 </head>
 <body>
+  
   <div class="container py-5">
     <div class="text-center mb-5">
       <h2 class="fw-bold">Selamat Datang di Dashboard, Qorrie!</h2>
       <p class="text-white">Pilih fitur yang ingin digunakan.</p>
     </div>
+<!-- Modal Peringatan -->
+<div class="modal fade" id="warningModal" tabindex="-1" aria-labelledby="warningModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="warningModalLabel">Peringatan! ❗</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Jika kamu menghapus cache browser, data pengeluaran dan kegiatan harian yang disimpan di <strong>localStorage</strong> akan hilang.</p>
+        <p>Jika ingin menghapus cache, disarankan untuk mengambil screenshot terlebih dahulu untuk memastikan data kamu tidak hilang.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Oke, Saya Mengerti!</button>
+      </div>
+    </div>
+  </div>
+</div>
 
     <div class="row">
       <!-- Tombol Catatan Keuangan -->
@@ -79,5 +99,21 @@
       <p class="text-white text-center">Made by - Pacarmu</p>
     </div>
   </div>
+  <script>
+    // Menampilkan modal peringatan saat pertama kali membuka Dashboard
+    window.onload = function() {
+      const isFirstVisit = !localStorage.getItem('hasVisited');
+      
+      if (isFirstVisit) {
+        // Menyimpan flag bahwa pengguna sudah melihat peringatan
+        localStorage.setItem('hasVisited', 'true');
+        
+        // Menampilkan modal
+        const modal = new bootstrap.Modal(document.getElementById('warningModal'));
+        modal.show();
+      }
+    };
+  </script>
+  
 </body>
 </html>
