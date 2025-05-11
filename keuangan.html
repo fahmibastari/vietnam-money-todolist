@@ -39,7 +39,7 @@
             <input type="text" id="item" class="form-control" placeholder="Apa yang dibeli?" required />
           </div>
           <div class="col-md-3">
-            <input type="text" id="amount" class="form-control" placeholder="Jumlah (VND)" inputmode="numeric" pattern="[0-9]*" required />
+            <input type="number" id="amount" class="form-control" placeholder="Jumlah (VND)" inputmode="numeric" required />
           </div>
           <div class="col-md-2 d-grid">
             <button type="submit" class="btn btn-success">+ Catat</button>
@@ -149,9 +149,9 @@ form.addEventListener("submit", e => {
 
 
 amountInput.addEventListener("input", function () {
-  let value = this.value.replace(/\./g, "");
-  if (isNaN(value)) return;
-  this.value = parseInt(value).toLocaleString("id-ID");
+  let value = this.value.replace(/\./g, ""); // Menghapus titik saat inputan
+  if (isNaN(value)) return; // Mengabaikan input yang bukan angka
+  this.value = parseInt(value).toLocaleString("id-ID"); // Format angka dengan titik
 });
 
 resetButton.addEventListener("click", function () {
