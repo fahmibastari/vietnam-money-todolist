@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="id">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>Catatan Keuangan Mingguan - Qorrie</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+        <style>
+          body {
+            background-color: #295b8e;
+            color: aliceblue;
+          }
+          .card {
+            border-radius: 1rem;
+          }
+          .table th, .table td {
+            vertical-align: middle;
+          }
+        </style>
+      </head>
+<body>
+  <div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="fw-bold">Catatan Keuangan Mingguan Qorrie</h1>
+        <h4 class="text-white">Demi menjaga dompet lebih sejahtera😹</h4>
+        <p class="text-white">
+          Sistem ini dibuat dengan jatah mingguan default sebesar <strong>600.000 VND</strong>.
+          <br>Jika dibagi selama 7 hari (Senin–Minggu), <br>maka jatah per harinya adalah <strong>85.714 VND</strong>.
+        </p>
+      </div>      
+
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <form id="expense-form" class="row g-3">
+          <div class="col-md-3">
+            <input type="date" id="date" class="form-control" required />
+          </div>
+          <div class="col-md-4">
+            <input type="text" id="item" class="form-control" placeholder="Apa yang dibeli?" required />
+          </div>
+          <div class="col-md-3">
+            <input type="text" id="amount" class="form-control" placeholder="Jumlah (VND)" required />
+          </div>
+          <div class="col-md-2 d-grid">
+            <button type="submit" class="btn btn-success">+ Catat</button>
+          </div>
+        </form>
+        <div class="small text-muted mt-2">
+            <h6>Fungsi Setiap Tombol :</h6>
+            <ul class="mb-0">
+              <li><strong>+ Catat</strong> – Menyimpan pengeluaran berdasarkan tanggal, nama barang, dan jumlahnya.</li>
+              <li><strong>Reset Pengeluaran</strong> – Menghapus semua data pengeluaran minggu ini dari browser kamu dan mulai dari awal.</li>
+              <li><strong>Hapus</strong> – Menghapus catatan pengeluaran tertentu yang sudah tercatat di tabel.</li>
+            </ul>
+          </div><br>
+          <div class="alert alert-info text-center mb-4">
+            Batas pengeluaran harian: <strong>85.714 VND</strong>
+          </div>
+          
+      </div>
+    </div>
+    <div class="d-flex justify-content-end mb-2">
+        <button id="reset-button" class="btn btn-warning btn-sm">Reset Pengeluaran</button>
+      </div>
+      
+      
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle text-center bg-white">
+          <thead class="table-secondary">
+            <tr>
+              <th>Tanggal</th>
+              <th>Keterangan</th>
+              <th>Pengeluaran (VND)</th>
+              <th>Sisa Mingguan</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="expense-table-body">
+            <!-- Data akan ditampilkan di sini -->
+          </tbody>
+        </table>
+      </div>
+      <br>
+    <div class="d-flex justify-content-center mb-2">
+        <a href="index.html" class="btn btn-primary btn-sm"><strong>Kembali ke Dashboard</strong></a>
+      </div>
+      <br>
+    <p class="text-white text-center">Made by - Pacarmu</p>
+    </div>
+
+  <script>
+    const weeklyBudget = 600000;
+const form = document.getElementById("expense-form");
+const dateInput = document.getElementById("date");
+const itemInput = document.getElementById("item");
+const amountInput = document.getElementById("amount");
+const resetButton = document.getElementById("reset-button");
+const tableBody = document.getElementById("expense-table-body");
+
+let expenses = JSON.parse(localStorage.getItem("expenses") || "[]");
+
+function getHariIndonesia(dateStr) {
+  const hari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+  const d = new Date(dateStr);
+  return `${hari[d.getDay()]}, ${d.toLocaleDateString("id-ID")}`;
+}
+
+function updateTable() {
+  tableBody.innerHTML = "";
+  let totalSpent = 0;
+  expenses.forEach((entry, index) => {
+    totalSpent += entry.amount;
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${getHariIndonesia(entry.date)}</td>
+      <td>${entry.item}</td>
+      <td>${entry.amount.toLocaleString("id-ID")}</td>
+      <td>${(weeklyBudget - totalSpent).toLocaleString("id-ID")}</td>
+      <td><button class="btn btn-sm btn-outline-danger" onclick="deleteEntry(${index})">Hapus</button></td>
+    `;
+    tableBody.appendChild(row);
+  });
+}
+
+function deleteEntry(index) {
+  expenses.splice(index, 1);
+  localStorage.setItem("expenses", JSON.stringify(expenses));
+  updateTable();
+}
+
+form.addEventListener("submit", e => {
+  e.preventDefault();
+  const date = dateInput.value;
+  const item = itemInput.value;
+  const amount = parseInt(amountInput.value.replace(/\./g, ""));
+  if (!date || !item || isNaN(amount)) return;
+
+  const batasHarian = Math.floor(weeklyBudget / 7);
+  if (amount > batasHarian) {
+    const konfirmasi = confirm(`💸 Pengeluaran ini melebihi batas harian (85.714 VND). Apakah kamu yakin ingin mencatatnya, Qorrie? 😺`);
+    if (!konfirmasi) return; // batalkan pencatatan
+  }
+
+  expenses.push({ date, item, amount });
+  localStorage.setItem("expenses", JSON.stringify(expenses));
+  updateTable();
+  form.reset();
+});
+
+
+amountInput.addEventListener("input", function () {
+  let value = this.value.replace(/\./g, "");
+  if (isNaN(value)) return;
+  this.value = parseInt(value).toLocaleString("id-ID");
+});
+
+resetButton.addEventListener("click", function () {
+  if (confirm("Yakin ingin menghapus semua data minggu ini?")) {
+    localStorage.removeItem("expenses");
+    expenses = [];
+    updateTable();
+  }
+});
+
+updateTable();
+
+
+  </script>
+</body>
+</html>
