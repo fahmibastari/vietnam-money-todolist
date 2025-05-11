@@ -108,6 +108,8 @@ function getHariIndonesia(dateStr) {
 function updateTable() {
   tableBody.innerHTML = "";
   let totalSpent = 0;
+
+  // Menghitung total pengeluaran setelah setiap perubahan data
   expenses.forEach((entry, index) => {
     totalSpent += entry.amount;
     const row = document.createElement("tr");
